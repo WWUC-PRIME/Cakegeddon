@@ -8,7 +8,30 @@
         margin: 0;
         overflow: hidden;
         background: #111;
-        cursor: none;
+        font-family: Arial, sans-serif;
+    }
+
+    #screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: white;
+        background: #111;
+        z-index: 10;
+    }
+
+    #screen h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    #screen button {
+        padding: 12px 30px;
+        font-size: 18px;
+        cursor: pointer;
     }
 
     #bat {
@@ -17,7 +40,7 @@
         height: 20px;
         background: #c49a6c;
         border-radius: 10px;
-        transform-origin: left center;
+        display: none;
     }
 
     .cake {
@@ -33,7 +56,6 @@
         width: 30px;
         height: 50px;
         background: pink;
-        border-radius: 5px;
         animation: fly 1s forwards;
     }
 
@@ -46,102 +68,89 @@
             opacity: 0;
         }
     }
-
-    #text {
-        position: absolute;
-        top: 40%;
-        width: 100%;
-        text-align: center;
-        font-size: 48px;
-        color: white;
-        font-family: Arial, sans-serif;
-        display: none;
-    }
 </style>
 </head>
 <body>
 
+<div id="screen">
+    <h1>CAKEGEDDON</h1>
+    <p>Wrong Way To Use Cake</p>
+    <button onclick="startGame()">START</button>
+</div>
+
 <div id="bat"></div>
-<div id="text"></div>
 
 <script>
-const bat = document.getElementById("bat");
-const text = document.getElementById("text");
-
-let smashedCount = 0;
 let cakes = [];
+let smashed = 0;
+const bat = document.getElementById("bat");
+const screen = document.getElementById("screen");
 
-function spawnCake() {
-    const cake = document.createElement("div");
-    cake.className = "cake";
-    cake.style.left = Math.random() * (window.innerWidth - 150) + "px";
-    cake.style.top = Math.random() * (window.innerHeight - 120) + "px";
-    document.body.appendChild(cake);
-    cakes.push(cake);
+function startGame() {
+    screen.style.display = "none";
+    bat.style.display = "block";
+    smashed = 0;
+    spawnCakes();
 }
 
-// Spawn 5 torta alapból
-for (let i = 0; i < 5; i++) spawnCake();
+function spawnCakes() {
+    for (let i = 0; i < 5; i++) {
+        const cake = document.createElement("div");
+        cake.className = "cake";
+        cake.style.left = Math.random() * (window.innerWidth - 150) + "px";
+        cake.style.top = Math.random() * (window.innerHeight - 120) + "px";
+        document.body.appendChild(cake);
+        cakes.push(cake);
+    }
+}
 
 document.addEventListener("mousemove", e => {
     bat.style.left = e.clientX + "px";
     bat.style.top = e.clientY + "px";
-    bat.style.transform = `rotate(${e.clientX % 360}deg)`;
 });
 
-document.addEventListener("touchmove", e => {
-    const touch = e.touches[0];
-    bat.style.left = touch.clientX + "px";
-    bat.style.top = touch.clientY + "px";
-    bat.style.transform = `rotate(${touch.clientX % 360}deg)`;
+document.addEventListener("click", e => {
+    cakes.forEach(cake => {
+        const r = cake.getBoundingClientRect();
+        if (
+            e.clientX > r.left &&
+            e.clientX < r.right &&
+            e.clientY > r.top &&
+            e.clientY < r.bottom
+        ) {
+            smashCake(cake);
+        }
+    });
 });
-
-function checkHit(x, y, cake) {
-    const rect = cake.getBoundingClientRect();
-    return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
-}
 
 function smashCake(cake) {
-    smashedCount++;
     cake.remove();
     cakes = cakes.filter(c => c !== cake);
+    smashed++;
 
-    for (let i = 0; i < 12; i++) {
-        const slice = document.createElement("div");
-        slice.className = "slice";
-        slice.style.left = (cake.offsetLeft + 70) + "px";
-        slice.style.top = (cake.offsetTop + 50) + "px";
-        slice.style.setProperty("--x", Math.random());
-        slice.style.setProperty("--y", Math.random());
-        document.body.appendChild(slice);
+    for (let i = 0; i < 10; i++) {
+        const s = document.createElement("div");
+        s.className = "slice";
+        s.style.left = cake.offsetLeft + "px";
+        s.style.top = cake.offsetTop + "px";
+        s.style.setProperty("--x", Math.random());
+        s.style.setProperty("--y", Math.random());
+        document.body.appendChild(s);
     }
 
     if (cakes.length === 0) {
-        setTimeout(() => {
-            text.innerText = `You are weird!\n${smashedCount} cakes destroyed`;
-            text.style.display = "block";
-        }, 800);
+        endGame();
     }
 }
 
-document.addEventListener("click", e => {
-    for (let cake of [...cakes]) {
-        if (checkHit(e.clientX, e.clientY, cake)) {
-            smashCake(cake);
-            break;
-        }
-    }
-});
-
-document.addEventListener("touchstart", e => {
-    const touch = e.touches[0];
-    for (let cake of [...cakes]) {
-        if (checkHit(touch.clientX, touch.clientY, cake)) {
-            smashCake(cake);
-            break;
-        }
-    }
-});
+function endGame() {
+    screen.innerHTML = `
+        <h1>You are weird</h1>
+        <p>You destroyed ${smashed} cakes.</p>
+        <button onclick="location.reload()">Play again</button>
+    `;
+    screen.style.display = "flex";
+}
 </script>
 
 </body>
