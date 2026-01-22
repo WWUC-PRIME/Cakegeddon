@@ -87,6 +87,7 @@ button {
 <div id="bat"></div>
 
 <script>
+const hitSound = new Audio("hit.mp3");
 const bat = document.getElementById("bat");
 const cake = document.getElementById("cake");
 const text = document.getElementById("text");
@@ -118,6 +119,22 @@ document.addEventListener("click", e => {
 });
 
 function hitCake() {
+function hitCake() {
+
+    // hang
+    hitSound.currentTime = 0;
+    hitSound.play();
+
+    // kis kamera rázás
+    document.body.style.transform = "translateX(5px)";
+    setTimeout(() => {
+        document.body.style.transform = "translateX(-5px)";
+    }, 50);
+    setTimeout(() => {
+        document.body.style.transform = "translateX(0)";
+    }, 100);
+
+    // torta animáció
     cake.style.transform = "translate(-50%, -50%) scale(0.95)";
     setTimeout(() => {
         cake.style.transform = "translate(-50%, -50%) scale(1)";
@@ -135,7 +152,11 @@ function hitCake() {
         setTimeout(() => end.style.display = "flex", 1200);
     }
 }
+
+    }
+}
 </script>
 
 </body>
 </html>
+
