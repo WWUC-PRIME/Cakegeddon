@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cakegeddon</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: #111;
+        cursor: none;
+    }
+
+    #bat {
+        position: absolute;
+        width: 160px;
+        height: 20px;
+        background: #c49a6c;
+        border-radius: 10px;
+        transform-origin: left center;
+    }
+
+    .cake {
+        position: absolute;
+        width: 140px;
+        height: 100px;
+        background: pink;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .slice {
+        position: absolute;
+        width: 30px;
+        height: 50px;
+        background: pink;
+        border-radius: 5px;
+        animation: fly 1s forwards;
+    }
+
+    @keyframes fly {
+        to {
+            transform: translate(
+                calc(-150px + 300px * var(--x)),
+                calc(-150px + 300px * var(--y))
+            ) rotate(720deg);
+            opacity: 0;
+        }
+    }
+
+    #text {
+        position: absolute;
+        top: 40%;
+        width: 100%;
+        text-align: center;
+        font-size: 48px;
+        color: white;
+        font-family: Arial, sans-serif;
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="bat"></div>
+<div id="text"></div>
+
+<script>
+const bat = document.getElementById("bat");
+const text = document.getElementById("text");
+
+let smashedCount = 0;
+let cakes = [];
+
+function spawnCake() {
+    const cake = document.createElement("div");
+    cake.className = "cake";
+    cake.style.left = Math.random() * (window.innerWidth - 150) + "px";
+    cake.style.top = Math.random() * (window.innerHeight - 120) + "px";
+    document.body.appendChild(cake);
+    cakes.push(cake);
+}
+
+// Spawn 5 torta alapból
+for (let i = 0; i < 5; i++) spawnCake();
+
+document.addEventListener("mousemove", e => {
+    bat.style.left = e.clientX + "px";
+    bat.style.top = e.clientY + "px";
+    bat.style.transform = `rotate(${e.clientX % 360}deg)`;
+});
+
+document.addEventListener("touchmove", e => {
+    const touch = e.touches[0];
+    bat.style.left = touch.clientX + "px";
+    bat.style.top = touch.clientY + "px";
+    bat.style.transform = `rotate(${touch.clientX % 360}deg)`;
+});
+
+function checkHit(x, y, cake) {
+    const rect = cake.getBoundingClientRect();
+    return x > rect.left && x < rect.right && y > rect.top && y < rect.bottom;
+}
+
+function smashCake(cake) {
+    smashedCount++;
+    cake.remove();
+    cakes = cakes.filter(c => c !== cake);
+
+    for (let i = 0; i < 12; i++) {
+        const slice = document.createElement("div");
+        slice.className = "slice";
+        slice.style.left = (cake.offsetLeft + 70) + "px";
+        slice.style.top = (cake.offsetTop + 50) + "px";
+        slice.style.setProperty("--x", Math.random());
+        slice.style.setProperty("--y", Math.random());
+        document.body.appendChild(slice);
+    }
+
+    if (cakes.length === 0) {
+        setTimeout(() => {
+            text.innerText = `You are weird!\n${smashedCount} cakes destroyed`;
+            text.style.display = "block";
+        }, 800);
+    }
+}
+
+document.addEventListener("click", e => {
+    for (let cake of [...cakes]) {
+        if (checkHit(e.clientX, e.clientY, cake)) {
+            smashCake(cake);
+            break;
+        }
+    }
+});
+
+document.addEventListener("touchstart", e => {
+    const touch = e.touches[0];
+    for (let cake of [...cakes]) {
+        if (checkHit(touch.clientX, touch.clientY, cake)) {
+            smashCake(cake);
+            break;
+        }
+    }
+});
+</script>
+
+</body>
+</html>
