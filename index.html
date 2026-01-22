@@ -11,45 +11,14 @@
         font-family: Arial, sans-serif;
     }
 
-    #bat {
-        position: absolute;
-        width: 160px;
-        height: 20px;
-        background: #c49a6c;
-        border-radius: 10px;
-        pointer-events: none;
-    }
-
-    #cake {
-        position: absolute;
-        width: 160px;
-        height: 110px;
-        background: pink;
-        border-radius: 0 0 20px 20px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    #text {
-        position: absolute;
-        top: 20%;
-        width: 100%;
-        text-align: center;
-        font-size: 48px;
-        color: white;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
-
-    #start {
+    #start, #end {
         position: fixed;
         inset: 0;
         background: #111;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
         color: white;
         z-index: 10;
     }
@@ -58,73 +27,38 @@
         padding: 12px 30px;
         font-size: 18px;
         cursor: pointer;
+        margin-top: 20px;
     }
-</style>
-</head>
-<body>
 
-<div id="start">
-    <h1>CAKEGEDDON</h1>
-    <button onclick="startGame()">START</button>
-</div>
-
-<div id="text"></div>
-<div id="cake"></div>
-<div id="bat"></div>
-
-<script>
-const bat = document.getElementById("bat");
-const cake = document.getElementById("cake");
-const text = document.getElementById("text");
-const start = document.getElementById("start");
-
-const words = ["OK.", "DONE.", "Naturally.", "Indeed."];
-let hitCount = 0;
-
-function startGame() {
-    start.style.display = "none";
-}
-
-document.addEventListener("mousemove", e => {
-    bat.style.left = e.clientX + "px";
-    bat.style.top = e.clientY + "px";
-});
-
-document.addEventListener("click", e => {
-    const rect = cake.getBoundingClientRect();
-
-    if (
-        e.clientX > rect.left &&
-        e.clientX < rect.right &&
-        e.clientY > rect.top &&
-        e.clientY < rect.bottom
-    ) {
-        hitCake();
+    #bat {
+        position: absolute;
+        width: 160px;
+        height: 20px;
+        background: linear-gradient(to right, #8b5a2b, #c49a6c);
+        border-radius: 10px;
+        pointer-events: none;
     }
-});
 
-function hitCake() {
-    cake.style.transform = "translate(-50%, -50%) scale(0.95)";
-    setTimeout(() => {
-        cake.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 100);
-
-    if (hitCount < words.length) {
-        text.innerText = words[hitCount];
-        text.style.opacity = 1;
-
-        setTimeout(() => {
-            text.style.opacity = 0;
-        }, 700);
-
-        hitCount++;
-    } else {
-        text.innerText = "You are weird";
-        text.style.opacity = 1;
-        cake.style.display = "none";
+    #cake {
+        position: absolute;
+        width: 180px;
+        height: 140px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
-}
-</script>
 
-</body>
-</html>
+    .layer {
+        position: absolute;
+        width: 100%;
+        height: 40px;
+        border-radius: 8px;
+    }
+
+    .layer:nth-child(1) {
+        top: 0;
+        background: #f5a6c8;
+    }
+
+    .layer:nth-child(2) {
+        t
