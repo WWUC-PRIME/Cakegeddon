@@ -96,6 +96,7 @@ const end = document.getElementById("end");
 
 const words = ["OK.", "DONE.", "Naturally.", "Indeed."];
 let hit = 0;
+let totalDestroyed = localStorage.getItem("cakes") || 14382;
 
 function startGame() {
     start.style.display = "none";
@@ -119,20 +120,15 @@ document.addEventListener("click", e => {
 });
 
 function hitCake() {
-function hitCake() {
 
     // hang
     hitSound.currentTime = 0;
     hitSound.play();
 
-    // kis kamera rázás
+    // kis rázás
     document.body.style.transform = "translateX(5px)";
-    setTimeout(() => {
-        document.body.style.transform = "translateX(-5px)";
-    }, 50);
-    setTimeout(() => {
-        document.body.style.transform = "translateX(0)";
-    }, 100);
+    setTimeout(() => document.body.style.transform = "translateX(-5px)", 50);
+    setTimeout(() => document.body.style.transform = "translateX(0)", 100);
 
     // torta animáció
     cake.style.transform = "translate(-50%, -50%) scale(0.95)";
@@ -146,17 +142,33 @@ function hitCake() {
         setTimeout(() => text.style.opacity = 0, 700);
         hit++;
     } else {
+
+        // számláló növelése
+        totalDestroyed++;
+        localStorage.setItem("cakes", totalDestroyed);
+
         cake.style.display = "none";
-        text.innerText = "You are weird";
+
+        text.innerHTML = `
+            <div style="font-size:42px;margin-bottom:20px;">
+                You didn’t have to do that.
+            </div>
+            <div style="font-size:22px;opacity:0.7;">
+                Cakes destroyed: ${totalDestroyed}
+            </div>
+        `;
+
         text.style.opacity = 1;
-        setTimeout(() => end.style.display = "flex", 1200);
+
+        setTimeout(() => {
+            end.style.display = "flex";
+        }, 1800);
     }
 }
 
-    }
-}
 </script>
 
 </body>
 </html>
+
 
