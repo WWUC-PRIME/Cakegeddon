@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Cakegeddon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body {
     margin: 0;
@@ -11,7 +13,7 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* START és END képernyő */
+/* START & END */
 #start, #end {
     position: fixed;
     inset: 0;
@@ -22,9 +24,11 @@ body {
     justify-content: center;
     color: white;
     z-index: 10;
+    text-align: center;
 }
+
 button {
-    padding: 12px 30px;
+    padding: 14px 32px;
     font-size: 18px;
     cursor: pointer;
     margin-top: 20px;
@@ -40,7 +44,7 @@ button {
     pointer-events: none;
 }
 
-/* TORTA KÉP */
+/* CAKE */
 #cake {
     position: absolute;
     width: 220px;
@@ -50,7 +54,7 @@ button {
     transition: transform 0.1s;
 }
 
-/* SZAVAK */
+/* TEXT */
 #text {
     position: absolute;
     top: 20%;
@@ -65,28 +69,23 @@ button {
 </head>
 <body>
 
-<!-- START SCREEN -->
-<div id="start">
-    <img src="logo.png" style="width: 400px; max-width: 90%; margin-bottom: 20px;">
-    <button onclick="startGame()">START</button>
+<!-- START -->
+<div id="start" onclick="startGame()">
+    <img src="logo.png" style="width:300px;max-width:90%;">
+    <button>TAP TO START</button>
 </div>
 
-<!-- END SCREEN -->
+<!-- END -->
 <div id="end" style="display:none;">
-    <h1>You are weird</h1>
+    <h1>You are weird.</h1>
+    <p id="finalCount"></p>
     <button onclick="location.reload()">PLAY AGAIN</button>
 </div>
 
-<!-- SZÓ -->
 <div id="text"></div>
-
-<!-- TORTA -->
 <img id="cake" src="cake.png">
-
-<!-- BAT -->
 <div id="bat"></div>
 
-<script>
 <script>
 const hitSound = new Audio("hit.mp3");
 
@@ -95,6 +94,7 @@ const cake = document.getElementById("cake");
 const text = document.getElementById("text");
 const start = document.getElementById("start");
 const end = document.getElementById("end");
+const finalCount = document.getElementById("finalCount");
 
 const words = ["OK.", "DONE.", "Naturally.", "Indeed."];
 
@@ -103,42 +103,53 @@ let gameStarted = false;
 let totalDestroyed = parseInt(localStorage.getItem("cakes")) || 14382;
 
 function startGame() {
-    start.style.display = "none";
     gameStarted = true;
+    start.style.display = "none";
+
+    // mobil hang engedélyezés
+    hitSound.play().then(() => {
+        hitSound.pause();
+        hitSound.currentTime = 0;
+    }).catch(()=>{});
 }
 
+/* egér */
 document.addEventListener("mousemove", e => {
     bat.style.left = e.clientX + "px";
     bat.style.top = e.clientY + "px";
 });
 
+/* click */
 document.addEventListener("click", e => {
     if (!gameStarted) return;
+    checkHit(e.clientX, e.clientY);
+});
 
+/* touch */
+document.addEventListener("touchstart", e => {
+    if (!gameStarted) return;
+    const t = e.touches[0];
+    checkHit(t.clientX, t.clientY);
+});
+
+function checkHit(x, y) {
     const r = cake.getBoundingClientRect();
+
     if (
-        e.clientX > r.left &&
-        e.clientX < r.right &&
-        e.clientY > r.top &&
-        e.clientY < r.bottom
+        x > r.left &&
+        x < r.right &&
+        y > r.top &&
+        y < r.bottom
     ) {
         hitCake();
     }
-});
+}
 
 function hitCake() {
-
-    // hang
     hitSound.currentTime = 0;
-    hitSound.play().catch(()=>{});
+    hitSound.play();
 
-    // kamera rázás
-    document.body.style.transform = "translateX(5px)";
-    setTimeout(() => document.body.style.transform = "translateX(-5px)", 50);
-    setTimeout(() => document.body.style.transform = "translateX(0)", 100);
-
-    // torta animáció
-    cake.style.transform = "translate(-50%, -50%) scale(0.95)";
+    cake.style.transform = "translate(-50%, -50%) scale(0.9)";
     setTimeout(() => {
         cake.style.transform = "translate(-50%, -50%) scale(1)";
     }, 100);
@@ -149,38 +160,30 @@ function hitCake() {
         setTimeout(() => text.style.opacity = 0, 700);
         hit++;
     } else {
-
         totalDestroyed++;
         localStorage.setItem("cakes", totalDestroyed);
 
         cake.style.display = "none";
 
         text.innerHTML = `
-            <div style="font-size:42px;margin-bottom:20px;">
-                You didn’t have to do that.
-            </div>
-            <div style="font-size:20px;opacity:0.6;">
-                Cakes destroyed globally
-            </div>
-            <div style="font-size:28px;margin-top:5px;">
-                ${totalDestroyed.toLocaleString()}
+            <div style="font-size:42px;">You didn’t have to do that.</div>
+            <div style="font-size:22px;opacity:0.7;margin-top:10px;">
+                Cakes destroyed: ${totalDestroyed}
             </div>
         `;
-
         text.style.opacity = 1;
 
         setTimeout(() => {
+            finalCount.innerText = "Total cakes destroyed: " + totalDestroyed;
             end.style.display = "flex";
         }, 1800);
     }
 }
 </script>
 
-
-</script>
-
 </body>
 </html>
+
 
 
 
