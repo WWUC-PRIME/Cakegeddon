@@ -6,32 +6,9 @@
 <style>
     body {
         margin: 0;
+        background: #111;
         overflow: hidden;
-        background: #111;
         font-family: Arial, sans-serif;
-    }
-
-    #screen {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        color: white;
-        background: #111;
-        z-index: 10;
-    }
-
-    #screen h1 {
-        font-size: 48px;
-        margin-bottom: 20px;
-    }
-
-    #screen button {
-        padding: 12px 30px;
-        font-size: 18px;
-        cursor: pointer;
     }
 
     #bat {
@@ -40,68 +17,72 @@
         height: 20px;
         background: #c49a6c;
         border-radius: 10px;
-        display: none;
+        pointer-events: none;
     }
 
-    .cake {
+    #cake {
         position: absolute;
-        width: 140px;
-        height: 100px;
+        width: 160px;
+        height: 110px;
         background: pink;
         border-radius: 0 0 20px 20px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
-    .slice {
+    #text {
         position: absolute;
-        width: 30px;
-        height: 50px;
-        background: pink;
-        animation: fly 1s forwards;
+        top: 20%;
+        width: 100%;
+        text-align: center;
+        font-size: 48px;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s;
     }
 
-    @keyframes fly {
-        to {
-            transform: translate(
-                calc(-150px + 300px * var(--x)),
-                calc(-150px + 300px * var(--y))
-            ) rotate(720deg);
-            opacity: 0;
-        }
+    #start {
+        position: fixed;
+        inset: 0;
+        background: #111;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: white;
+        z-index: 10;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 18px;
+        cursor: pointer;
     }
 </style>
 </head>
 <body>
 
-<div id="screen">
+<div id="start">
     <h1>CAKEGEDDON</h1>
-    <p>Wrong Way To Use Cake</p>
     <button onclick="startGame()">START</button>
 </div>
 
+<div id="text"></div>
+<div id="cake"></div>
 <div id="bat"></div>
 
 <script>
-let cakes = [];
-let smashed = 0;
 const bat = document.getElementById("bat");
-const screen = document.getElementById("screen");
+const cake = document.getElementById("cake");
+const text = document.getElementById("text");
+const start = document.getElementById("start");
+
+const words = ["OK.", "DONE.", "Naturally.", "Indeed."];
+let hitCount = 0;
 
 function startGame() {
-    screen.style.display = "none";
-    bat.style.display = "block";
-    smashed = 0;
-    spawnCakes();
-}
-
-function spawnCakes() {
-    for (let i = 0; i < 5; i++) {
-        const cake = document.createElement("div");
-        cake.className = "cake";
-        cake.style.left = Math.random() * (window.innerWidth - 150) + "px";
-        cake.style.top = Math.random() * (window.innerHeight - 120) + "px";
-        document.body.appendChild(cake);
-        cakes.push(cake);
-    }
+    start.style.display = "none";
 }
 
 document.addEventListener("mousemove", e => {
@@ -110,46 +91,38 @@ document.addEventListener("mousemove", e => {
 });
 
 document.addEventListener("click", e => {
-    cakes.forEach(cake => {
-        const r = cake.getBoundingClientRect();
-        if (
-            e.clientX > r.left &&
-            e.clientX < r.right &&
-            e.clientY > r.top &&
-            e.clientY < r.bottom
-        ) {
-            smashCake(cake);
-        }
-    });
+    const rect = cake.getBoundingClientRect();
+
+    if (
+        e.clientX > rect.left &&
+        e.clientX < rect.right &&
+        e.clientY > rect.top &&
+        e.clientY < rect.bottom
+    ) {
+        hitCake();
+    }
 });
 
-function smashCake(cake) {
-    cake.remove();
-    cakes = cakes.filter(c => c !== cake);
-    smashed++;
+function hitCake() {
+    cake.style.transform = "translate(-50%, -50%) scale(0.95)";
+    setTimeout(() => {
+        cake.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 100);
 
-    for (let i = 0; i < 10; i++) {
-        const s = document.createElement("div");
-        s.className = "slice";
-        s.style.left = cake.offsetLeft + "px";
-        s.style.top = cake.offsetTop + "px";
-        s.style.setProperty("--x", Math.random());
-        s.style.setProperty("--y", Math.random());
-        document.body.appendChild(s);
+    if (hitCount < words.length) {
+        text.innerText = words[hitCount];
+        text.style.opacity = 1;
+
+        setTimeout(() => {
+            text.style.opacity = 0;
+        }, 700);
+
+        hitCount++;
+    } else {
+        text.innerText = "You are weird";
+        text.style.opacity = 1;
+        cake.style.display = "none";
     }
-
-    if (cakes.length === 0) {
-        endGame();
-    }
-}
-
-function endGame() {
-    screen.innerHTML = `
-        <h1>You are weird</h1>
-        <p>You destroyed ${smashed} cakes.</p>
-        <button onclick="location.reload()">Play again</button>
-    `;
-    screen.style.display = "flex";
 }
 </script>
 
