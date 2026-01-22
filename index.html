@@ -4,115 +4,86 @@
 <meta charset="UTF-8">
 <title>Cakegeddon</title>
 <style>
-    body {
-        margin: 0;
-        background: #111;
-        overflow: hidden;
-        font-family: Arial, sans-serif;
-    }
+body {
+    margin: 0;
+    background: #111;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
 
-    #start, #end {
-        position: fixed;
-        inset: 0;
-        background: #111;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        z-index: 10;
-    }
+/* START és END képernyő */
+#start, #end {
+    position: fixed;
+    inset: 0;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    z-index: 10;
+}
+button {
+    padding: 12px 30px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+}
 
-    button {
-        padding: 12px 30px;
-        font-size: 18px;
-        cursor: pointer;
-        margin-top: 20px;
-    }
+/* BAT */
+#bat {
+    position: absolute;
+    width: 160px;
+    height: 20px;
+    background: linear-gradient(to right, #8b5a2b, #c49a6c);
+    border-radius: 10px;
+    pointer-events: none;
+}
 
-    #bat {
-        position: absolute;
-        width: 160px;
-        height: 20px;
-        background: linear-gradient(to right, #8b5a2b, #c49a6c);
-        border-radius: 10px;
-        pointer-events: none;
-    }
+/* TORTA KÉP */
+#cake {
+    position: absolute;
+    width: 220px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+}
 
-    #cake {
-        position: absolute;
-        width: 180px;
-        height: 140px;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .layer {
-        position: absolute;
-        width: 100%;
-        height: 40px;
-        border-radius: 8px;
-    }
-
-    .layer:nth-child(1) {
-        top: 0;
-        background: #f5a6c8;
-    }
-
-    .layer:nth-child(2) {
-        top: 40px;
-        background: #ffd1e6;
-    }
-
-    .layer:nth-child(3) {
-        top: 80px;
-        background: #f5a6c8;
-    }
-
-    .cream {
-        position: absolute;
-        width: 100%;
-        height: 15px;
-        background: #fff;
-        top: 35px;
-        border-radius: 0 0 10px 10px;
-    }
-
-    #text {
-        position: absolute;
-        top: 20%;
-        width: 100%;
-        text-align: center;
-        font-size: 48px;
-        color: white;
-        opacity: 0;
-        transition: opacity 0.3s;
-    }
+/* SZAVAK */
+#text {
+    position: absolute;
+    top: 20%;
+    width: 100%;
+    text-align: center;
+    font-size: 48px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
 </style>
 </head>
 <body>
 
+<!-- START SCREEN -->
 <div id="start">
-    <h1>CAKEGEDDON</h1>
+    <img src="logo.png" style="width: 400px; max-width: 90%; margin-bottom: 20px;">
     <button onclick="startGame()">START</button>
 </div>
 
+<!-- END SCREEN -->
 <div id="end" style="display:none;">
     <h1>You are weird</h1>
-    <button onclick="location.reload()">Play again</button>
+    <button onclick="location.reload()">PLAY AGAIN</button>
 </div>
 
+<!-- SZÓ -->
 <div id="text"></div>
 
-<div id="cake">
-    <div class="layer"></div>
-    <div class="cream"></div>
-    <div class="layer"></div>
-    <div class="cream" style="top:75px"></div>
-    <div class="layer"></div>
-</div>
+<!-- TORTA -->
+<img id="cake" src="cake.png">
 
+<!-- BAT -->
 <div id="bat"></div>
 
 <script>
@@ -168,5 +139,3 @@ function hitCake() {
 
 </body>
 </html>
-
-
