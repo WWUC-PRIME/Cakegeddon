@@ -61,4 +61,110 @@
     }
 
     .layer:nth-child(2) {
-        t
+        top: 40px;
+        background: #ffd1e6;
+    }
+
+    .layer:nth-child(3) {
+        top: 80px;
+        background: #f5a6c8;
+    }
+
+    .cream {
+        position: absolute;
+        width: 100%;
+        height: 15px;
+        background: #fff;
+        top: 35px;
+        border-radius: 0 0 10px 10px;
+    }
+
+    #text {
+        position: absolute;
+        top: 20%;
+        width: 100%;
+        text-align: center;
+        font-size: 48px;
+        color: white;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+</style>
+</head>
+<body>
+
+<div id="start">
+    <h1>CAKEGEDDON</h1>
+    <button onclick="startGame()">START</button>
+</div>
+
+<div id="end" style="display:none;">
+    <h1>You are weird</h1>
+    <button onclick="location.reload()">Play again</button>
+</div>
+
+<div id="text"></div>
+
+<div id="cake">
+    <div class="layer"></div>
+    <div class="cream"></div>
+    <div class="layer"></div>
+    <div class="cream" style="top:75px"></div>
+    <div class="layer"></div>
+</div>
+
+<div id="bat"></div>
+
+<script>
+const bat = document.getElementById("bat");
+const cake = document.getElementById("cake");
+const text = document.getElementById("text");
+const start = document.getElementById("start");
+const end = document.getElementById("end");
+
+const words = ["OK.", "DONE.", "Naturally.", "Indeed."];
+let hit = 0;
+
+function startGame() {
+    start.style.display = "none";
+}
+
+document.addEventListener("mousemove", e => {
+    bat.style.left = e.clientX + "px";
+    bat.style.top = e.clientY + "px";
+});
+
+document.addEventListener("click", e => {
+    const r = cake.getBoundingClientRect();
+    if (
+        e.clientX > r.left &&
+        e.clientX < r.right &&
+        e.clientY > r.top &&
+        e.clientY < r.bottom
+    ) {
+        hitCake();
+    }
+});
+
+function hitCake() {
+    cake.style.transform = "translate(-50%, -50%) scale(0.95)";
+    setTimeout(() => {
+        cake.style.transform = "translate(-50%, -50%) scale(1)";
+    }, 100);
+
+    if (hit < words.length) {
+        text.innerText = words[hit];
+        text.style.opacity = 1;
+        setTimeout(() => text.style.opacity = 0, 700);
+        hit++;
+    } else {
+        cake.style.display = "none";
+        text.innerText = "You are weird";
+        text.style.opacity = 1;
+        setTimeout(() => end.style.display = "flex", 1200);
+    }
+}
+</script>
+
+</body>
+</html>
